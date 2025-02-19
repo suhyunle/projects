@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goods Menu</title>
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/menu.css">
+    <style>
+         header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            text-align: center;
+            padding: 10px 0;
+            z-index: 1000; /* 다른 요소 위에 위치 */
+            border-bottom: none;
+        }
+
+        header img {
+            width: 120px; /* 로고 크기 조정 */
+            height: auto;
+        }
+
+        .container { text-align: center; margin-top: 80px;}
+        .heroes { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+        .hero { width: 120px; height: 120px; background-color: lightgray; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        .hero img { width: 100px; height: 100px; object-fit: cover; }
+        .pagination { margin-top: 20px; font-size: 20px;}
+
+        .pagination button { padding: 10px 20px; font-size: 20px; cursor: pointer; }
+        .name {font-size: 1px; /* 원하는 글씨 크기로 설정 */font-weight: bold; /* 글씨를 굵게 할 수도 있어요 */}
+
+    </style>
+</head>
+<body>
+    <header>
+        <img src="./images/starbucks_logo.png" alt="스타벅스 로고">
+    </header>
+
+
+
+    <div class="container">
+        <!-- HEROES -->
+        <div class="heroes" id="heroes-container"></div>
+
+        <!-- 페이지 이동 버튼 -->
+        <div class="pagination">
+            <button id="prevBtn">이전</button>
+            <span id="pageNumber">1</span>
+            <button id="nextBtn">다음</button>
+        </div>
+    </div>
+
+    <script>
+        // 전체 굿즈 목록
+        const goodsList = [
+            { name: "디어러브 하트풀 토트백", img: "https://image.istarbucks.co.kr/upload/store/skuimg/2025/01/[9300000005525]_20250122142424616.jpg" },
+            { name: "러블리수달 키체인 세트 (2P)", img: "https://image.istarbucks.co.kr/upload/store/skuimg/2025/01/[11161720]_20250122112451433.jpg" },
+            { name: "디어러브 로켓 미러 키체인", img: "https://image.istarbucks.co.kr/upload/store/skuimg/2025/01/[9300000005526]_20250122142633035.jpg" },
+            { name: "디어러브 볼 앤 커트러리 세트", img: "https://image.istarbucks.co.kr/upload/store/skuimg/2025/02/[9300000005524]_20250205150507224.jpg" },
+            { name: "스위티 플러피 버니 키체인", img: "https://image.istarbucks.co.kr/upload/store/skuimg/2025/01/[9300000005527]_20250122142827515.jpg" },
+            { name: "리저브 레더 코스터 세트 2p", img: "https://image.istarbucks.co.kr/upload/store/skuimg/2024/10/[9300000005293]_20241016131853349.jpg" },
+
+
+            ];
+            
+        const itemsPerPage = 10;
+        let currentPage = 1;
+
+        function renderPage() {
+            const heroesContainer = document.getElementById('heroes-container');
+            const pageNumber = document.getElementById('pageNumber');
+            heroesContainer.innerHTML = '';
+
+            // 현재 페이지에서 보여줄 굿즈만 잘라서 표시
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const currentItems = goodsList.slice(startIndex, startIndex + itemsPerPage);
+
+            currentItems.forEach(item => {
+                const heroDiv = document.createElement('div');
+                heroDiv.classList.add('hero');
+                
+                const img = document.createElement('img');
+                img.src = item.img;
+                img.alt = item.name;
+                
+                const name = document.createElement('p');
+                name.textContent = item.name;
+                
+                heroDiv.appendChild(img);
+                heroDiv.appendChild(name);
+                heroesContainer.appendChild(heroDiv);
+            });
+
+            pageNumber.textContent = currentPage;
+        }
+
+        // 페이지 이동 함수
+        function changePage(direction) {
+            const totalPages = Math.ceil(goodsList.length / itemsPerPage);
+            if (direction === 'next') {
+                currentPage = currentPage < totalPages ? currentPage + 1 : 1; // 마지막 페이지에서 다시 1페이지로
+            } else {
+                currentPage = currentPage > 1 ? currentPage - 1 : totalPages; // 첫 페이지에서 마지막 페이지로 이동
+            }
+            renderPage();
+        }
+
+        document.getElementById('prevBtn').addEventListener('click', () => changePage('prev'));
+        document.getElementById('nextBtn').addEventListener('click', () => changePage('next'));
+
+        renderPage(); // 초기 화면 렌더링
+    </script>
+</body>
+</html>
