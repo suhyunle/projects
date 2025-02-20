@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goods Menu</title>
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/menu.css">
+    <style>
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #264e36;
+            text-align: center;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+
+        header img {
+            width: 120px;
+            height: auto;
+        }
+
+        .container { text-align: center; margin-top: 80px; background-color: #264e36; }
+        .heroes { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+        .hero { width: 120px; height: 120px; background-color: lightgray; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 50px; }
+        .hero img { width: 100px; height: 100px; object-fit: cover; }
+        .pagination { margin-top: 20px; font-size: 20px; }
+        .pagination button { padding: 10px 20px; font-size: 20px; cursor: pointer; }
+        .name { font-size: 12px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="main.html" class="logo">
+            <img src="./images/starbucks_logo.png" alt="STARBUCKS" />
+            
+        </a>
+
+        <input type="text" id="searchInput" placeholder="굿즈 검색" onkeyup="filterProducts()">
+        <select id="categoryFilter" onchange="filterProducts()">
+            <option value="all">전체</option>
+            <option value="bag">가방</option>
+            <option value="keychain">키체인</option>
+            <option value="tumbler">텀블러</option>
+        </select>
+
+        
+    </header>
+
+    <div class="container">
+        <div class="heroes" id="heroes-container"></div>
+
+        <div class="pagination">
+            <button id="prevBtn">이전</button>
+            <span id="pageNumber">1</span>
+            <button id="nextBtn">다음</button>
+        </div>
+    </div>
+    
+
+    <script>
+        // 전체 굿즈 목록 (category 속성 추가)
+        const goodsList = [
+            { name: "디어러브 하트풀 토트백", img: "https://image.istarbucks.co.kr/upload/store/skuimg/2025/01/[9300000005525]_20250122142424616.jpg", category: "bag" },
+            { name: "러블리수달 키체인 세트 (2P)", img: "https://image.istarbucks.co.kr/upload/store/skuimg/2025/01/[11161720]_20250122112451433.jpg", category: "keychain" },
+            { name: "디어러브 로켓 미러 키체인", img: "https://image.istarbucks.co.kr/upload/store/skuimg/2025/01/[9300000005526]_20250122142633035.jpg", category: "keychain" },
+            { name: "디어러브 볼 앤 커트러리 세트", img: "https://image.istarbucks.co.kr/upload/store/skuimg/2025/02/[9300000005524]_20250205150507224.jpg", category: "tumbler" },
+            { name: "스위티 플러피 버니 키체인", img: "https://image.istarbucks.co.kr/upload/store/skuimg/2025/01/[9300000005527]_20250122142827515.jpg", category: "keychain" },
+            { name: "리저브 레더 코스터 세트 2p", img: "https://image.istarbucks.co.kr/upload/store/skuimg/2024/10/[9300000005293]_20241016131853349.jpg", category: "tumbler" }
+        ];
+
+        let filteredGoods = [...goodsList];
+        const itemsPerPage = 5;
+        let currentPage = 1;
+
+        function filterProducts() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const categoryFilter = document.getElementById('categoryFilter').value;
+
+            filteredGoods = goodsList.filter(item => {
+                const matchesSearch = item.name.toLowerCase().includes(searchInput);
+                const matchesCategory = categoryFilter === "all" || item.category === categoryFilter;
+                return matchesSearch && matchesCategory;
+            });
+
+            currentPage = 1;
+            renderPage();
+        }
+
+        function renderPage() {
+            const heroesContainer = document.getElementById('heroes-container');
+            const pageNumber = document.getElementById('pageNumber');
+            heroesContainer.innerHTML = '';
+
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const currentItems = filteredGoods.slice(startIndex, startIndex + itemsPerPage);
+
+            currentItems.forEach(item => {
+                const hero = document.createElement('div');
+                hero.classList.add('hero');
+                hero.innerHTML = `
+                    <a href="${item.img}" target="_blank">
+                        <img src="${item.img}" alt="${item.name}">
+                        <p class="name">${item.name}</p>
+                    </a>
+                `;
+                heroesContainer.appendChild(hero);
+            });
+
+            pageNumber.textContent = `${currentPage} / ${Math.ceil(filteredGoods.length / itemsPerPage)}`;
+        }
+
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderPage();
+            }
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            if (currentPage < Math.ceil(filteredGoods.length / itemsPerPage)) {
+                currentPage++;
+                renderPage();
+            }
+        });
+
+        window.onload = () => {
+            renderPage();
+        };
+    </script>
+</body>
+</html>
