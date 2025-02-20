@@ -91,5 +91,7 @@ body {
   .name { font-size: 7px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
 
 
-
+  #pageNumber {
+    color: white; /* 페이지 번호 글자 하얀색 */
+}
   
