@@ -12,7 +12,7 @@
 <body>
     <header>
         <a href="main.html" class="logo">
-        <img src="./images/starbucks_logo.png" alt="STARBUCKS" />
+            <img src="./images/starbucks_logo.png" alt="STARBUCKS" />
         </a>
 
         <input type="text" id="searchInput" placeholder="굿즈 검색" onkeyup="filterProducts()">
@@ -22,8 +22,6 @@
             <option value="keychain">키체인</option>
             <option value="tumbler">텀블러</option>
         </select>
-
-        
     </header>
 
     <div class="container">
@@ -36,11 +34,16 @@
         </div>
     </div>
 
-    
-    
+    <!-- 확대된 이미지 모달 -->
+    <div id="zoomModal" class="zoom-modal">
+        <div class="controls">
+            <button onclick="zoomIn()">+</button>
+            <button onclick="zoomOut()">-</button>
+        </div>
+        <img id="zoomImage" src="" alt="Zoomed Image">
+    </div>
 
     <script>
-        // 전체 굿즈 목록 (category 속성 추가)
         const goodsList = [
             { name: "디어러브 하트풀 토트백", img: "https://image.istarbucks.co.kr/upload/store/skuimg/2025/01/[9300000005525]_20250122142424616.jpg", category: "bag" },
             { name: "러블리수달 키체인 세트 (2P)", img: "https://image.istarbucks.co.kr/upload/store/skuimg/2025/01/[11161720]_20250122112451433.jpg", category: "keychain" },
@@ -107,7 +110,6 @@
             { name: "플레이 핑크 스트로캡 세트 (3P)", img: "https://image.istarbucks.co.kr/upload/store/skuimg/2025/02/[9300000005778]_20250214131333201.jpg", category: "tumbler" },
             { name: "호작도 베어리스타 키체인", img: "https://image.istarbucks.co.kr/upload/store/skuimg/2024/06/[9300000005093]_20240604132409476.jpg", category: "keychain" }
 
-
         ];
 
         let filteredGoods = [...goodsList];
@@ -140,15 +142,41 @@
                 const hero = document.createElement('div');
                 hero.classList.add('hero');
                 hero.innerHTML = `
-                    <a href="${item.img}" target="_blank">
-                        <img src="${item.img}" alt="${item.name}">
+                    <div>
+                        <img src="${item.img}" alt="${item.name}" class="thumbnail" onclick="openZoomModal('${item.img}')">
                         <p class="name">${item.name}</p>
-                    </a>
+                    </div>
                 `;
                 heroesContainer.appendChild(hero);
             });
 
             pageNumber.textContent = `${currentPage} / ${Math.ceil(filteredGoods.length / itemsPerPage)}`;
+        }
+
+        let scale = 1;
+
+        function openZoomModal(imgSrc) {
+            const zoomModal = document.getElementById('zoomModal');
+            const zoomImage = document.getElementById('zoomImage');
+            zoomImage.src = imgSrc;
+            zoomModal.style.display = 'flex';
+        }
+
+        function closeZoomModal() {
+            const zoomModal = document.getElementById('zoomModal');
+            zoomModal.style.display = 'none';
+            scale = 1; // Reset scale when closing modal
+        }
+
+        function zoomIn() {
+            scale += 0.1;
+            document.getElementById('zoomImage').style.transform = `scale(${scale})`;
+        }
+
+        function zoomOut() {
+            scale -= 0.1;
+            if (scale < 0.1) scale = 0.1;
+            document.getElementById('zoomImage').style.transform = `scale(${scale})`;
         }
 
         document.getElementById('prevBtn').addEventListener('click', () => {
@@ -164,6 +192,14 @@
                 renderPage();
             }
         });
+
+        // 클릭 시 모달 닫기 (배경 클릭 시)
+        window.onclick = (event) => {
+            const zoomModal = document.getElementById('zoomModal');
+            if (event.target === zoomModal) {
+                closeZoomModal();
+            }
+        };
 
         window.onload = () => {
             renderPage();
